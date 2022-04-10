@@ -14,10 +14,11 @@ class InteractClaimListener implements Listener {
 
     public function onInteract(PlayerInteractEvent $ev) : void {
         $item = $ev->getItem();
-        if($item->getNamedTag()->hasTag("ekit", StringTag::class)) {
-            $kitname = $item->getNamedTag()->getTagValue("ekit", StringTag::class);
+        if($item->getNamedTag()->getTag("ekit") !== null) {
+            $item->getNamedTag()->getString("ekit");
+            $kitname = $item->getNamedTag()->getString("ekit");
             if(KitManager::exists($kitname)) {
-                $ev->setCancelled();
+                $ev->cancel();
                 $player = $ev->getPlayer();
                 $kit = KitManager::get($kitname);
 
