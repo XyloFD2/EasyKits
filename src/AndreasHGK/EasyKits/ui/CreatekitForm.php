@@ -9,8 +9,8 @@ use AndreasHGK\EasyKits\manager\CategoryManager;
 use AndreasHGK\EasyKits\manager\DataManager;
 use AndreasHGK\EasyKits\manager\KitManager;
 use AndreasHGK\EasyKits\utils\LangUtils;
-use jojoe77777\FormAPI\CustomForm;
-use pocketmine\Player;
+use AndreasHGK\EasyKits\libs\jojoe77777\FormAPI\CustomForm;
+use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 
 class CreatekitForm {

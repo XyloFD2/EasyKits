@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace AndreasHGK\EasyKits\ui;
 
 use AndreasHGK\EasyKits\utils\LangUtils;
-use jojoe77777\FormAPI\SimpleForm;
-use pocketmine\Player;
+use AndreasHGK\EasyKits\libs\jojoe77777\FormAPI\SimpleForm;
+use pocketmine\player\Player;
 use pocketmine\Server;
 
 class GivekitPlayerSelectForm {
@@ -18,7 +18,7 @@ class GivekitPlayerSelectForm {
                 $player->sendMessage(LangUtils::getMessage("givekit-cancelled"));
                 return;
             }
-            $target = Server::getInstance()->getPlayer($data);
+            $target = Server::getInstance()->getPlayerExact($data);
             if($target === null) {
                 $player->sendMessage(LangUtils::getMessage("givekit-player-not-found"));
                 return;

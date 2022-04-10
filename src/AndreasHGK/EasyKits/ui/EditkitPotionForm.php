@@ -7,18 +7,18 @@ namespace AndreasHGK\EasyKits\ui;
 use AndreasHGK\EasyKits\Kit;
 use AndreasHGK\EasyKits\manager\KitManager;
 use AndreasHGK\EasyKits\utils\LangUtils;
-use jojoe77777\FormAPI\CustomForm;
-use pocketmine\entity\Effect;
-use pocketmine\entity\EffectInstance;
-use pocketmine\lang\TranslationContainer;
-use pocketmine\Player;
+use AndreasHGK\EasyKits\libs\jojoe77777\FormAPI\CustomForm;
+use pocketmine\data\bedrock\EffectIdMap;
+use pocketmine\entity\effect\Effect;
+use pocketmine\entity\effect\EffectInstance;
+use pocketmine\player\Player;
+use pocketmine\Server;
 
 class EditkitPotionForm {
 
     public static function sendTo(Player $player, Kit $kit, int $potion) : void {
         if(isset($kit->getEffects()[$potion])) $kitPot = $kit->getEffects()[$potion];
-
-        $effect = Effect::getEffect($potion);
+        $effect = EffectIdMap::getInstance()->fromId($potion);
         $ui = new CustomForm(function (Player $player, $data) use ($kit, $potion, $effect) {
             if($data === null) {
                 EditkitPotionSelectForm::sendTo($player, $kit);
@@ -31,7 +31,7 @@ class EditkitPotionForm {
                     $kit->setEffects($effects);
                 }
                 $player->sendMessage(LangUtils::getMessage("editkit-potion-success-removed", true, [
-                    "{POTION}" => new TranslationContainer($effect->getName()),
+                    "{POTION}" => Server::getInstance()->getLanguage()->translate($effect->getName()),
                     "{NAME}" => $kit->getName(),
                 ]));
                 return;
@@ -58,16 +58,15 @@ class EditkitPotionForm {
                 KitManager::saveAll();
 
                 $player->sendMessage(LangUtils::getMessage("editkit-potion-success-added", true, [
-                    "{POTION}" => new TranslationContainer($effect->getName()),
+                    "{POTION}" => Server::getInstance()->getLanguage()->translate($effect->getName()),
                     "{NAME}" => $kit->getName(),
                 ]));
             }
             EditkitPotionSelectForm::sendTo($player, KitManager::get($kit->getName()));
-            return;
         });
         $ui->setTitle(LangUtils::getMessage("editkit-title"));
         $ui->addLabel(LangUtils::getMessage("editkit-potion-text", true, [
-            "{POTION}" => new TranslationContainer($effect->getName()),
+            "{POTION}" => Server::getInstance()->getLanguage()->translate($effect->getName()),
             "{NAME}" => $kit->getName(),
         ]));
 

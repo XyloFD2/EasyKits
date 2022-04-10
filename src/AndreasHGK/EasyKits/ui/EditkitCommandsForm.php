@@ -7,8 +7,8 @@ namespace AndreasHGK\EasyKits\ui;
 use AndreasHGK\EasyKits\Kit;
 use AndreasHGK\EasyKits\manager\KitManager;
 use AndreasHGK\EasyKits\utils\LangUtils;
-use jojoe77777\FormAPI\CustomForm;
-use pocketmine\Player;
+use AndreasHGK\EasyKits\libs\jojoe77777\FormAPI\CustomForm;
+use pocketmine\player\Player;
 
 class EditkitCommandsForm {
 

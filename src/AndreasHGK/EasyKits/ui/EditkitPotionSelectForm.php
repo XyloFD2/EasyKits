@@ -6,11 +6,10 @@ namespace AndreasHGK\EasyKits\ui;
 
 use AndreasHGK\EasyKits\Kit;
 use AndreasHGK\EasyKits\utils\LangUtils;
-use Closure;
-use jojoe77777\FormAPI\SimpleForm;
-use pocketmine\entity\Effect;
-use pocketmine\lang\TranslationContainer;
-use pocketmine\Player;
+use AndreasHGK\EasyKits\libs\jojoe77777\FormAPI\SimpleForm;
+use pocketmine\data\bedrock\EffectIdMap;
+use pocketmine\player\Player;
+use pocketmine\Server;
 
 class EditkitPotionSelectForm {
 
@@ -21,18 +20,16 @@ class EditkitPotionSelectForm {
                 return;
             }
 
-            EditkitPotionForm::sendTo($player, $kit, (int)$data);
-
-            return;
+            EditkitPotionForm::sendTo($player, $kit, $data+1);
         });
         $ui->setTitle(LangUtils::getMessage("editkit-title"));
         $ui->setContent(LangUtils::getMessage("editkit-potionselect-text"));
-
-        $effects = Closure::bind(static function () {
-            return Effect::$effects;
-        }, null, Effect::class)();
+        $effects = [];
+        for($i=1; $i <= 26; $i++) {
+            $effects[] = EffectIdMap::getInstance()->fromId($i)->getName();
+        }
         foreach($effects as $effect) {
-            $ui->addButton(LangUtils::getMessage("editkit-potionselect-button", true, ["{POTION}" => new TranslationContainer($effect->getName())]), -1, "", (string)$effect->getId());
+            $ui->addButton(LangUtils::getMessage("editkit-potionselect-button", true, ["{POTION}" => Server::getInstance()->getLanguage()->translate($effect)]));
         }
         $player->sendForm($ui);
     }

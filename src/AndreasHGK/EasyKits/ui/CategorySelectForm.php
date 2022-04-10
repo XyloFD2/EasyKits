@@ -8,8 +8,8 @@ use AndreasHGK\EasyKits\event\CategorySelectEvent;
 use AndreasHGK\EasyKits\manager\CategoryManager;
 use AndreasHGK\EasyKits\manager\DataManager;
 use AndreasHGK\EasyKits\utils\LangUtils;
-use jojoe77777\FormAPI\SimpleForm;
-use pocketmine\Player;
+use AndreasHGK\EasyKits\libs\jojoe77777\FormAPI\SimpleForm;
+use pocketmine\player\Player;
 
 class CategorySelectForm {
 

@@ -8,8 +8,8 @@ use AndreasHGK\EasyKits\manager\KitManager;
 use AndreasHGK\EasyKits\utils\KitException;
 use AndreasHGK\EasyKits\utils\LangUtils;
 use AndreasHGK\EasyKits\utils\TryClaim;
-use jojoe77777\FormAPI\SimpleForm;
-use pocketmine\Player;
+use AndreasHGK\EasyKits\libs\jojoe77777\FormAPI\SimpleForm;
+use pocketmine\player\Player;
 
 class GivekitKitSelectForm {
 

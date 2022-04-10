@@ -8,8 +8,8 @@ use AndreasHGK\EasyKits\importer\AdvancedKitsImporter;
 use AndreasHGK\EasyKits\importer\KitsPlusImporter;
 use AndreasHGK\EasyKits\importer\KitUIImporter;
 use AndreasHGK\EasyKits\utils\LangUtils;
-use jojoe77777\FormAPI\CustomForm;
-use pocketmine\Player;
+use AndreasHGK\EasyKits\libs\jojoe77777\FormAPI\CustomForm;
+use pocketmine\player\Player;
 
 class KitImportForm {
 
