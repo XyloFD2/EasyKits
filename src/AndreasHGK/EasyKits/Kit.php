@@ -11,15 +11,18 @@ use AndreasHGK\EasyKits\manager\DataManager;
 use AndreasHGK\EasyKits\manager\EconomyManager;
 use AndreasHGK\EasyKits\utils\KitException;
 use AndreasHGK\EasyKits\utils\LangUtils;
-use pocketmine\command\ConsoleCommandSender;
-use pocketmine\entity\EffectInstance;
+use pocketmine\console\ConsoleCommandSender;
+use pocketmine\entity\effect\EffectInstance;
 use pocketmine\item\Item;
+use pocketmine\item\ItemIds;
 use pocketmine\item\ItemFactory;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\permission\Permissible;
 use pocketmine\permission\Permission;
+use pocketmine\permission\PermissionParser;
 use pocketmine\permission\PermissionManager;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\Server;
 
 class Kit {
@@ -117,7 +120,7 @@ class Kit {
         if($kit->getPrice() > 0) {
             EconomyManager::reduceMoney($player, $kit->getPrice(), true);
         }
-        $player->getInventory()->addItem($kit->getInteractItem());
+        $player->getInventory()->addItem($kit->getInteractItem()->setCustomName($kit->getName()));
         return true;
     }
 
@@ -154,7 +157,7 @@ class Kit {
         $invCount = count($invSlots);
         if($this->doOverrideArmor()) {
             foreach($armorSlots as $key => $armorSlot) {
-                if($playerArmor[$key]->getId() !== Item::AIR) {
+                if($playerArmor[$key]->getId() !== ItemIds::AIR) {
                     $invCount++;
                 }
             }
@@ -194,14 +197,14 @@ class Kit {
         }
         foreach($armorSlots as $key => $armorSlot) {
             if($kit->doOverrideArmor()) $playerArmorInv->setItem($key, $armorSlot);
-            elseif($playerArmorInv->getItem($key)->getId() !== Item::AIR) $playerInv->addItem($armorSlot);
+            elseif($playerArmorInv->getItem($key)->getId() !== ItemIds::AIR) $playerInv->addItem($armorSlot);
             else $playerArmorInv->setItem($key, $armorSlot);
         }
         foreach($kit->getEffects() as $effect) {
-            $player->addEffect($effect);
+            $player->getEffects()->add($effect);
         }
         foreach($kit->getCommands() as $command) {
-            Server::getInstance()->dispatchCommand(new ConsoleCommandSender(), LangUtils::replaceVariables($command, ["{PLAYER}" => $player->getName(), "{NICK}" => $player->getDisplayName()]));
+            Server::getInstance()->dispatchCommand(new ConsoleCommandSender(Server::getInstance(), Server::getInstance()->getLanguage()), LangUtils::replaceVariables($command, ["{PLAYER}" => $player->getName(), "{NICK}" => $player->getDisplayName()]));
         }
         return true;
     }
@@ -230,10 +233,11 @@ class Kit {
      * @param Item $item
      */
     public function setInteractItem(Item $item) : void {
-        if(!$item->getNamedTag()->hasTag("ekit") || $item->getNamedTag()->getTagValue("ekit", StringTag::class) !== $this->getName()) {
-            $item->setNamedTagEntry(new StringTag("ekit", $this->name));
+        if($item->getNamedTag()->getTag("ekit") == null || $item->getNamedTag()->getTag("ekit") !== $this->getName()) {
+            $item->setNamedTag(CompoundTag::create()->setTag("ekit", new StringTag($this->name)));
         }
         $this->interactItem = $item;
+
     }
 
     /**
@@ -513,7 +517,7 @@ class Kit {
     public function setChestKit(bool $bool) : void {
         $this->chestKit = $bool;
         if($bool) {
-            $item = ItemFactory::get(DataManager::getKey(DataManager::CONFIG, "chestKit-itemid"));
+            $item = ItemFactory::getInstance()->get(DataManager::getKey(DataManager::CONFIG, "chestKit-itemid"));
             $item->setCustomName(LangUtils::getMessage("chestkit-name", true, ["{NAME}" => $this->getName()]));
             $item->setLore(LangUtils::getMessage("chestkit-lore"));
             $this->setInteractItem($item);
@@ -532,15 +536,15 @@ class Kit {
 
         $permissionManager->addPermission(new Permission(EasyKits::PERM_ROOT . "kit." . $this->getPermission(),
             "permission to claim kit " . $this->getName(),
-            DataManager::getKey(DataManager::CONFIG, "op-has-all-kits") ? Permission::DEFAULT_OP : Permission::DEFAULT_FALSE));
+            [DataManager::getKey(DataManager::CONFIG, "op-has-all-kits") ? PermissionParser::DEFAULT_OP : PermissionParser::DEFAULT_FALSE]));
 
         $permissionManager->addPermission(new Permission(EasyKits::PERM_ROOT . "free." . $this->getPermission(),
             "permission to claim kit " . $this->getName() . " for free",
-            DataManager::getKey(DataManager::CONFIG, "op-has-free-kits") ? Permission::DEFAULT_OP : Permission::DEFAULT_FALSE));
+            [DataManager::getKey(DataManager::CONFIG, "op-has-free-kits") ? PermissionParser::DEFAULT_OP : PermissionParser::DEFAULT_FALSE]));
 
         $permissionManager->addPermission(new Permission(EasyKits::PERM_ROOT . "instant." . $this->getPermission(),
             "permission to claim kit " . $this->getName() . " without cooldown",
-            DataManager::getKey(DataManager::CONFIG, "op-has-instant-kits") ? Permission::DEFAULT_OP : Permission::DEFAULT_FALSE));
+            [DataManager::getKey(DataManager::CONFIG, "op-has-instant-kits") ? PermissionParser::DEFAULT_OP : PermissionParser::DEFAULT_FALSE]));
     }
 
     /**
