@@ -19,8 +19,7 @@ use AndreasHGK\EasyKits\manager\CooldownManager;
 use AndreasHGK\EasyKits\manager\DataManager;
 use AndreasHGK\EasyKits\manager\EconomyManager;
 use AndreasHGK\EasyKits\manager\KitManager;
-use JackMD\UpdateNotifier\UpdateNotifier;
-use muqsit\invmenu\InvMenuHandler;
+use AndreasHGK\EasyKits\libs\muqsit\invmenu\InvMenuHandler;
 use pocketmine\command\PluginCommand;
 use pocketmine\plugin\PluginBase;
 
@@ -36,8 +35,6 @@ class EasyKits extends PluginBase {
 
     public function onLoad() : void {
         self::$instance = $this;
-
-        UpdateNotifier::checkUpdate($this->getName(), $this->getDescription()->getVersion());
         DataManager::loadDefault();
         if(DataManager::getKey(DataManager::CONFIG, "auto-update-config")) {
             DataManager::updateAllConfigs();
@@ -76,8 +73,7 @@ class EasyKits extends PluginBase {
             );
         }
         foreach($commands as $command) {
-            $cmd = new PluginCommand($command->getName(), $this);
-            $cmd->setExecutor($command);
+            $cmd = new PluginCommand($command->getName(), $this, $command);
             $cmd->setDescription($command->getDesc());
             $cmd->setAliases($command->getAliases());
             $cmd->setPermission($command->getPermission());
@@ -90,12 +86,12 @@ class EasyKits extends PluginBase {
         foreach($listeners as $listener) {
             $this->getServer()->getPluginManager()->registerEvents($listener, $this);
         }
-        if(!InvMenuHandler::isRegistered()) {
+        if(!InvMenuHandler::isRegistered()){
             InvMenuHandler::register($this);
         }
     }
 
-    public function onDisable() {
+    public function onDisable() :void {
         KitManager::saveAll();
         CooldownManager::saveCooldowns();
         CategoryManager::saveAll();
