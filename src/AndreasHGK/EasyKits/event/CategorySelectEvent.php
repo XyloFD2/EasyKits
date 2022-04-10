@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace AndreasHGK\EasyKits\event;
 
 use AndreasHGK\EasyKits\Category;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class CategorySelectEvent extends CategoryEvent {
 

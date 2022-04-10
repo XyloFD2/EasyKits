@@ -30,4 +30,8 @@ abstract class KitEvent extends Event implements Cancellable {
         $this->kit = $kit;
     }
 
+    public function isCancelled() : bool{
+        return false;
+    }
+
 }

@@ -30,4 +30,8 @@ abstract class CategoryEvent extends Event implements Cancellable {
         $this->category = $category;
     }
 
+    public function isCancelled() : bool{
+        return false;
+    }
+
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AndreasHGK\EasyKits\event;
 
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 trait PlayerEventTrait {
 
