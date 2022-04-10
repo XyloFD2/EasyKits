@@ -124,7 +124,7 @@ class CategoryManager {
     public static function load(string $name) : void {
         $file = self::getCategoryFile()->getAll();
         $categorydata = $file[$name];
-        try {
+        try{
             $category = new Category($name);
             $kits = [];
             foreach($categorydata["kits"] as $kitname) {

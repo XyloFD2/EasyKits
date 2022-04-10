@@ -6,7 +6,7 @@ namespace AndreasHGK\EasyKits\manager;
 
 use AndreasHGK\EasyKits\EasyKits;
 use onebone\economyapi\EconomyAPI;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\Server;
 use Twisted\MultiEconomy\MultiEconomy;
 

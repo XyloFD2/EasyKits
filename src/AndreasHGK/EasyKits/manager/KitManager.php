@@ -10,8 +10,9 @@ use AndreasHGK\EasyKits\event\KitDeleteEvent;
 use AndreasHGK\EasyKits\event\KitEditEvent;
 use AndreasHGK\EasyKits\Kit;
 use AndreasHGK\EasyKits\utils\ItemUtils;
+use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\Effect;
-use pocketmine\entity\EffectInstance;
+use pocketmine\entity\effect\EffectInstance;
 use pocketmine\permission\Permissible;
 use pocketmine\utils\Config;
 use Throwable;
@@ -203,8 +204,7 @@ class KitManager {
     public static function load(string $name) : void {
         $file = self::getKitFile()->getAll();
         $kitdata = $file[$name];
-        try {
-
+        try{
             $items = [];
             foreach($kitdata["items"] as $slot => $itemData) {
                 $items[$slot] = ItemUtils::dataToItem($itemData);
@@ -216,7 +216,7 @@ class KitManager {
             }
             $effects = [];
             foreach($kitdata["effects"] ?? [] as $id => $effect) {
-                $effects[$id] = new EffectInstance(Effect::getEffect($id), $effect["duration"] ?? null, $effect["amplifier"] ?? 0);
+                $effects[$id] = new EffectInstance(EffectIdMap::getInstance()->fromId($id), $effect["duration"] ?? null, $effect["amplifier"] ?? 0);
             }
             $commands = [];
             foreach($kitdata["commands"] ?? [] as $command) {
@@ -237,11 +237,11 @@ class KitManager {
             $kit->setCommands($commands);
 
             self::$kits[$name] = $kit;
-
         } catch(Throwable $e) {
             EasyKits::get()->getLogger()->error("failed to load kit '" . $name . "'");
             EasyKits::get()->getLogger()->debug($e->getMessage());
         }
+
     }
 
     /**
@@ -270,7 +270,7 @@ class KitManager {
             $kitData["armor"][$slot] = ItemUtils::itemToData($item);
         }
         foreach($kit->getEffects() as $effect) {
-            $kitData["effects"][$effect->getId()] = [
+            $kitData["effects"][EffectIdMap::getInstance()->toId($effect->getType())] = [
                 "amplifier" => $effect->getAmplifier(),
                 "duration" => $effect->getDuration(),
             ];
