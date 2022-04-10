@@ -7,6 +7,7 @@ namespace AndreasHGK\EasyKits;
 use AndreasHGK\EasyKits\manager\DataManager;
 use pocketmine\permission\Permissible;
 use pocketmine\permission\Permission;
+use pocketmine\permission\PermissionParser;
 use pocketmine\permission\PermissionManager;
 
 class Category {
@@ -126,7 +127,7 @@ class Category {
 
     public function __construct(string $name) {
         $this->name = $name;
-        PermissionManager::getInstance()->addPermission(new Permission(EasyKits::PERM_ROOT . "category." . $name, "permission to view category " . $name, DataManager::getKey(DataManager::CONFIG, "op-has-all-categories") ? Permission::DEFAULT_OP : Permission::DEFAULT_FALSE));
+        PermissionManager::getInstance()->addPermission(new Permission(EasyKits::PERM_ROOT . "category." . $name, "permission to view category " . $name, [DataManager::getKey(DataManager::CONFIG, "op-has-all-categories") ? PermissionParser::DEFAULT_OP : PermissionParser::DEFAULT_FALSE]));
     }
 
 }
