@@ -9,6 +9,7 @@ use AndreasHGK\EasyKits\manager\DataManager;
 use DaPigGuy\PiggyCustomEnchants\CustomEnchantManager;
 use DaPigGuy\PiggyCustomEnchants\CustomEnchants\CustomEnchants;
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -42,10 +43,10 @@ abstract class ItemUtils {
 
             default:
 
-                $item = ItemFactory::get($itemData["id"], $itemData["damage"] ?? 0, $itemData["count"] ?? 1);
+                $item = ItemFactory::getInstance()->get($itemData["id"], $itemData["damage"] ?? 0, $itemData["count"] ?? 1);
                 if(isset($itemData["enchants"])) {
                     foreach($itemData["enchants"] as $ename => $level) {
-                        $ench = Enchantment::getEnchantment((int)$ename);
+                        $ench = EnchantmentIdMap::getInstance()->fromId((int)$ename);
                         if(PiggyCustomEnchantsLoader::isPluginLoaded() && $ench === null) {
 
                             if(!PiggyCustomEnchantsLoader::isNewVersion()) $ench = CustomEnchants::getEnchantment((int)$ename);

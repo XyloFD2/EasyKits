@@ -8,7 +8,7 @@ use AndreasHGK\EasyKits\Kit;
 use AndreasHGK\EasyKits\manager\CooldownManager;
 use AndreasHGK\EasyKits\manager\DataManager;
 use pocketmine\item\Item;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 abstract class TryClaim {
 
