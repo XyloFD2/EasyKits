@@ -12,7 +12,7 @@ use AndreasHGK\EasyKits\utils\LangUtils;
 use AndreasHGK\EasyKits\utils\TryClaim;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\Server;
 
 class GivekitCommand extends EKExecutor {
@@ -32,7 +32,7 @@ class GivekitCommand extends EKExecutor {
                 $sender->sendMessage(LangUtils::getMessage("givekit-missing-argument-1"));
                 return true;
             }
-            $player = Server::getInstance()->getPlayer($args[0]);
+            $player = Server::getInstance()->getPlayerByPrefix($args[0]);
             if($player === null) {
                 $sender->sendMessage(LangUtils::getMessage("givekit-player-not-found"));
                 return true;
@@ -59,7 +59,7 @@ class GivekitCommand extends EKExecutor {
         }
 
         if(isset($args[0])) {
-            $player = Server::getInstance()->getPlayer($args[0]);
+            $player = Server::getInstance()->getPlayerByPrefix($args[0]);
             if($player === null) {
                 $sender->sendMessage(LangUtils::getMessage("givekit-player-not-found"));
                 return true;

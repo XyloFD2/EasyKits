@@ -9,7 +9,7 @@ use AndreasHGK\EasyKits\ui\EditkitSelectForm;
 use AndreasHGK\EasyKits\utils\LangUtils;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class EditkitCommand extends EKExecutor {
 

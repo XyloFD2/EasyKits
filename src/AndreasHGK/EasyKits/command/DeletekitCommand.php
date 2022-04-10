@@ -9,7 +9,7 @@ use AndreasHGK\EasyKits\ui\DeletekitForm;
 use AndreasHGK\EasyKits\utils\LangUtils;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class DeletekitCommand extends EKExecutor {
 

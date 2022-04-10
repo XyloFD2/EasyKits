@@ -11,7 +11,7 @@ use AndreasHGK\EasyKits\ui\KitImportForm;
 use AndreasHGK\EasyKits\utils\LangUtils;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class EKImportCommand extends EKExecutor {
 

@@ -8,7 +8,7 @@ use AndreasHGK\EasyKits\ui\CreatekitForm;
 use AndreasHGK\EasyKits\utils\LangUtils;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class CreatekitCommand extends EKExecutor {
 

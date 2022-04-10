@@ -13,7 +13,7 @@ use AndreasHGK\EasyKits\utils\LangUtils;
 use AndreasHGK\EasyKits\utils\TryClaim;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class KitCommand extends EKExecutor {
 
