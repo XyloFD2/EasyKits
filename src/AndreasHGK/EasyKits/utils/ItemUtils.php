@@ -1,19 +1,33 @@
 <?php
-
+/**
+ *    _____                         _  __  _   _         
+ *   | ____|   __ _   ___   _   _  | |/ / (_) | |_   ___ 
+ *   |  _|    / _` | / __| | | | | | ' /  | | | __| / __|
+ *   | |___  | (_| | \__ \ | |_| | | . \  | | | |_  \__ \
+ *   |_____|  \__,_| |___/  \__, | |_|\_\ |_|  \__| |___/
+ *                           |___/                        
+ *          by AndreasHGK and fernanACM 
+ */
 declare(strict_types=1);
 
 namespace AndreasHGK\EasyKits\utils;
 
-use AndreasHGK\EasyKits\customenchants\PiggyCustomEnchantsLoader;
-use AndreasHGK\EasyKits\manager\DataManager;
+use pocketmine\data\bedrock\EnchantmentIdMap;
+
+use pocketmine\item\Durable;
+use pocketmine\item\Item;
+use pocketmine\item\LegacyStringToItemParser;
+use pocketmine\item\StringToItemParser;
+use pocketmine\item\enchantment\EnchantmentInstance;
+
+use pocketmine\utils\TextFormat;
+
 use DaPigGuy\PiggyCustomEnchants\CustomEnchantManager;
 use DaPigGuy\PiggyCustomEnchants\CustomEnchants\CustomEnchants;
-use pocketmine\item\enchantment\Enchantment;
-use pocketmine\data\bedrock\EnchantmentIdMap;
-use pocketmine\item\enchantment\EnchantmentInstance;
-use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\utils\TextFormat;
+
+use AndreasHGK\EasyKits\customenchants\PiggyCustomEnchantsLoader;
+use AndreasHGK\EasyKits\manager\DataManager;
+use pocketmine\world\format\io\GlobalItemDataHandlers;
 
 abstract class ItemUtils {
 
@@ -37,26 +51,32 @@ abstract class ItemUtils {
     public static function dataToItem(array $itemData) : Item {
         switch(strtolower($itemData["format"] ?? "")) {
             case "nbt":
-
-                $item = Item::jsonDeserialize($itemData);
+                if(is_int($itemData["id"])){
+                    $item = Item::legacyJsonDeserialize($itemData);
+                }else{
+                    $item = LegacyUtils::legacyStringJsonDeserialize($itemData);
+                }
                 return $item;
-
             default:
-
-                $item = ItemFactory::getInstance()->get($itemData["id"], $itemData["damage"] ?? 0, $itemData["count"] ?? 1);
+                if(is_int($itemData["id"])){
+                    $item = LegacyStringToItemParser::getInstance()->parse($itemData["id"].":".(isset($itemData["damage"]) ? $itemData["damage"] : 0))->setCount($itemData["count"] ?? 1);
+                }else{
+                    //$item = StringToItemParser::getInstance()->parse($itemData["id"])->setCount($itemData["count"] ?? 1);
+                    $itemStackData = GlobalItemDataHandlers::getUpgrader()->upgradeItemTypeDataString($itemData['id'], $itemData['damage'] ?? 0, $itemData['count'] ?? 1, null);
+                    $item = GlobalItemDataHandlers::getDeserializer()->deserializeStack($itemStackData);
+                }
                 if(isset($itemData["enchants"])) {
-                    foreach($itemData["enchants"] as $ename => $level) {
+                    foreach($itemData["enchants"] as $ename => $level){
                         $ench = EnchantmentIdMap::getInstance()->fromId((int)$ename);
-                        if(PiggyCustomEnchantsLoader::isPluginLoaded() && $ench === null) {
-
+                        if(PiggyCustomEnchantsLoader::isPluginLoaded() && is_null($ench)){
                             if(!PiggyCustomEnchantsLoader::isNewVersion()) $ench = CustomEnchants::getEnchantment((int)$ename);
                             else $ench = CustomEnchantManager::getEnchantment((int)$ename);
 
                         }
-                        if($ench === null) continue;
-                        if(!PiggyCustomEnchantsLoader::isNewVersion() && $ench instanceof CustomEnchants) {
+                        if(is_null($ench)) continue;
+                        if(!PiggyCustomEnchantsLoader::isNewVersion() && $ench instanceof CustomEnchants){
                             PiggyCustomEnchantsLoader::getPlugin()->addEnchantment($item, $ench->getName(), $level);
-                        } else {
+                        }else{
                             $item->addEnchantment(new EnchantmentInstance($ench, $level));
                         }
                     }
@@ -82,38 +102,35 @@ abstract class ItemUtils {
         $format = DataManager::getKey(DataManager::CONFIG, "item-format");
         switch(strtolower($format)) {
             case "nbt":
-
-                $itemData = $item->jsonSerialize();
+                $itemData = LegacyUtils::jsonSerialize($item);
                 if(isset($itemData["nbt_b64"]) || isset($itemData["nbt_hex"]) || isset($itemData["nbt"])) {
                     $itemData["format"] = "nbt";
                 }
                 return $itemData;
-
             default:
+                $serialized = GlobalItemDataHandlers::getSerializer()->serializeType($item);
                 $itemData = self::ITEM_FORMAT;
-                $itemData["id"] = $item->getId();
-                $itemData["damage"] = $item->getDamage();
+                $itemData["id"] = $serialized->getName();
                 $itemData["count"] = $item->getCount();
+                $item instanceof Durable ? $item->getDamage() : $serialized->getMeta();
                 if($item->hasCustomName()) {
                     $itemData["display_name"] = $item->getCustomName();
-                } else {
+                }else{
                     unset($itemData["display_name"]);
                 }
                 if($item->getLore() !== []) {
                     $itemData["lore"] = $item->getLore();
-                } else {
+                }else{
                     unset($itemData["lore"]);
                 }
                 if($item->hasEnchantments()) {
                     foreach($item->getEnchantments() as $enchantment) {
-                        $itemData["enchants"][(string)$enchantment->getId()] = $enchantment->getLevel();
+                        $itemData["enchants"][(string)EnchantmentIdMap::getInstance()->toId($enchantment->getType())] = $enchantment->getLevel();
                     }
                 } else {
                     unset($itemData["enchants"]);
                 }
-
                 return $itemData;
         }
     }
-
 }

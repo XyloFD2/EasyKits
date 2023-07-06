@@ -1,37 +1,60 @@
 <?php
-
+/**
+ *    _____                         _  __  _   _         
+ *   | ____|   __ _   ___   _   _  | |/ / (_) | |_   ___ 
+ *   |  _|    / _` | / __| | | | | | ' /  | | | __| / __|
+ *   | |___  | (_| | \__ \ | |_| | | . \  | | | |_  \__ \
+ *   |_____|  \__,_| |___/  \__, | |_|\_\ |_|  \__| |___/
+ *                           |___/                        
+ *          by AndreasHGK and fernanACM 
+ */
 declare(strict_types=1);
 
 namespace AndreasHGK\EasyKits\manager;
 
-use AndreasHGK\EasyKits\EasyKits;
-use onebone\economyapi\EconomyAPI;
-use pocketmine\player\Player;
 use pocketmine\Server;
+use pocketmine\player\Player;
+
+use AndreasHGK\EasyKits\EasyKits;
+
+use cooldogedev\BedrockEconomy\BedrockEconomy;
+use cooldogedev\BedrockEconomy\api\legacy\ClosureContext;
+
+use onebone\economyapi\EconomyAPI;
 use Twisted\MultiEconomy\MultiEconomy;
 
-class EconomyManager {
-
-    public static $instance;
+class EconomyManager{
 
     /**
-     * @var null|EconomyAPI|MultiEconomy
+     * @var null|EconomyAPI|BedrockEconomy
      */
     public static $economy = null;
 
-    public static function getMoney(Player $player) {
-        switch(true) {
-            case self::getEconomy() instanceof EconomyAPI:
-                return self::getEconomy()->myMoney($player);
-                break;
-            case self::getEconomy() instanceof MultiEconomy:
-                return self::getEconomy()->getAPI()->getBalance($player->getName(), DataManager::getKey(DataManager::CONFIG, "multieconomy-currency"));
-                break;
+    /**
+     * @param Player $player
+     * @return float
+     */
+    public static function getMoney(Player $player): float{
+        $economy = self::getEconomy();
+        switch(true){
+            case $economy instanceof EconomyAPI:
+                return $economy->myMoney($player);
+            case $economy instanceof MultiEconomy:
+                $currency = DataManager::getKey(DataManager::CONFIG, "multieconomy-currency");
+                return $economy->getAPI()->getBalance($player->getName(), $currency);
+            case $economy instanceof BedrockEconomy:
+                 return $economy->getAPI()->getPlayerBalance($player->getName());
         }
         return 0;
     }
 
-    public static function setMoney(Player $player, $money, bool $force = false) {
+    /**
+     * @param Player $player
+     * @param float $money
+     * @param boolean $force
+     * @return void
+     */
+    public static function setMoney(Player $player, float $money, bool $force = false): void{
         switch(true) {
             case self::getEconomy() instanceof EconomyAPI:
                 self::getEconomy()->setMoney($player, $money);
@@ -39,10 +62,19 @@ class EconomyManager {
             case self::getEconomy() instanceof MultiEconomy:
                 self::getEconomy()->getAPI()->setBalance($player->getName(), DataManager::getKey(DataManager::CONFIG, "multieconomy-currency"), $money);
                 break;
+            case self::getEconomy() instanceof BedrockEconomy:
+                self::getEconomy()->getAPI()->setPlayerBalance($player->getName(), (int)$money);
+                break;
         }
     }
 
-    public static function reduceMoney(Player $player, $money, bool $force = false) {
+    /**
+     * @param Player $player
+     * @param float $money
+     * @param boolean $force
+     * @return void
+     */
+    public static function reduceMoney(Player $player, float $money, bool $force = false): void{
         switch(true) {
             case self::getEconomy() instanceof EconomyAPI:
                 self::getEconomy()->reduceMoney($player, $money, $force);
@@ -50,10 +82,19 @@ class EconomyManager {
             case self::getEconomy() instanceof MultiEconomy:
                 self::getEconomy()->getAPI()->takeFromBalance($player->getName(), DataManager::getKey(DataManager::CONFIG, "multieconomy-currency"), $money);
                 break;
+            case self::getEconomy() instanceof BedrockEconomy:
+                self::getEconomy()->getAPI()->subtractFromPlayerBalance($player->getName(), (int)$money);
+                break;
         }
     }
-
-    public static function addMoney(Player $player, $money, bool $force = false) {
+    
+    /**
+     * @param Player $player
+     * @param float $money
+     * @param boolean $force
+     * @return void
+     */
+    public static function addMoney(Player $player, float $money, bool $force = false): void{
         switch(true) {
             case self::getEconomy() instanceof EconomyAPI:
                 self::getEconomy()->addMoney($player, $money, $force);
@@ -61,10 +102,16 @@ class EconomyManager {
             case self::getEconomy() instanceof MultiEconomy:
                 self::getEconomy()->getAPI()->addToBalance($player->getName(), DataManager::getKey(DataManager::CONFIG, "multieconomy-currency"), $money);
                 break;
+            case self::getEconomy() instanceof BedrockEconomy:
+                self::getEconomy()->getAPI()->addToPlayerBalance($player->getName(), (int)$money);
+                break;
         }
     }
 
-    public static function loadEconomy() : void {
+    /**
+     * @return void
+     */
+    public static function loadEconomy(): void{
         $plugins = Server::getInstance()->getPluginManager();
         $economyAPI = $plugins->getPlugin("EconomyAPI");
         if($economyAPI instanceof EconomyAPI) {
@@ -72,23 +119,25 @@ class EconomyManager {
             EasyKits::get()->getLogger()->info("loaded EconomyAPI");
             return;
         }
-        $multiEconomy = $plugins->getPlugin("MultiEconomy");
-        if($multiEconomy instanceof MultiEconomy) {
-            self::$economy = $multiEconomy;
-            EasyKits::get()->getLogger()->info("loaded MultiEconomy");
+        $bedrockEconomy = $plugins->getPlugin("BedrockEconomy");
+        if($bedrockEconomy instanceof BedrockEconomy){
+            self::$economy = $bedrockEconomy;
+            EasyKits::get()->getLogger()->info("loaded BedrockEconomy");
             return;
         }
     }
 
-    public static function isEconomyLoaded() : bool {
+    /**
+     * @return boolean
+     */
+    public static function isEconomyLoaded(): bool{
         return self::getEconomy() !== null;
     }
 
-    public static function getEconomy() {
+    /**
+     * @return void
+     */
+    public static function getEconomy(){
         return self::$economy;
     }
-
-    private function __construct() {
-    }
-
 }

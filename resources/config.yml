@@ -1,5 +1,5 @@
 #don't touch this
-version: 6
+version: 8
 
 # When you installed a new update, (if true) the plugin will try to add all the missing config values. This applies to Commands.yml, Lang.yml and Config.yml
 # This WILL remove all comments made and the file might be harder to read.
@@ -27,8 +27,12 @@ show-locked-categories: false
 
 # if true, the player also needs the easykits.kit.<kitname> permission to equip the chestkit.
 chestKit-locked: false
-
-chestKit-itemid: 54
+# The id can be numerical or with letters, but you must follow the example to avoid errors:
+# ==(Numerical)==
+# chestKit-itemid: "54:0"
+# ==(Letters)==
+# chestKit-itemid: "chest"
+chestKit-itemid: "54:0"
 
 # give all EasyKits.kit.* permissions to operators
 op-has-all-kits: true
@@ -50,3 +54,20 @@ item-format: "nbt"
 
 # for if you're using multieconomy
 multieconomy-currency: "dollars"
+
+# Images for the forms, made by fernanACM
+# You can use url of internet images, example:
+# Form:
+#   image:
+#     category-unlocked-url: "https://user-images.githubusercontent.com/83558341/195784419-7efde11a-f0f0-4dc2-ad3c-69616cbfb611.png"
+#     kit-free-url: "textures/items/diamond"
+Form:
+  image:
+    category-unlocked-url: "https://i.imgur.com/wr8rN0j.png"
+    category-locked-url: "textures/ui/lock_color"
+    givekit-kitselect-url: "textures/ui/promo_gift_small_green"
+    givekit-playerselect-url: "textures/ui/FriendsDiversity"
+    kit-free-url: "textures/ui/promo_gift_small_blue"
+    kit-lock-url: "textures/ui/lock_color"
+    kit-cooldown-url: "textures/ui/timer"
+    kit-priced-url: "textures/ui/MCoin"

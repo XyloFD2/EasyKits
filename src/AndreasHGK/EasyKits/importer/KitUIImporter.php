@@ -9,10 +9,12 @@ use AndreasHGK\EasyKits\manager\DataManager;
 use AndreasHGK\EasyKits\manager\KitManager;
 use Closure;
 use Infernus101\KitUI\Main;
-use pocketmine\entity\EffectInstance;
+use pocketmine\data\bedrock\EnchantmentIdMap;
+use pocketmine\entity\effect\EffectInstance;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\Item;
+use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\Server;
 
 class KitUIImporter {
@@ -31,7 +33,11 @@ class KitUIImporter {
     }
 
     //a big thanks to AdvancedKits for no $kit->getItems() method
-    public static function Import(\Infernus101\KitUI\Kit $akit) : bool {
+    /**
+     * @param \Infernus101\KitUI\Kit $akit
+     * @return boolean
+     */
+    public static function Import(\Infernus101\KitUI\Kit $akit): bool{
         $name = $akit->name;
         if(KitManager::exists($name)) return false;
         $data = $akit->data;
@@ -71,7 +77,7 @@ class KitUIImporter {
                     return $this->loadEffect(...explode(":", $effectString));
                 }, $akit, \Infernus101\KitUI\Kit::class);
                 if($e instanceof EffectInstance) {
-                    $effects[$e->getId()] = $e;
+                    $effects[$e->getType()->getId()] = $e;
                 }
             }
         }
@@ -82,48 +88,52 @@ class KitUIImporter {
         }
 
         $kit = new Kit($name, $name, $price, $cooldown, $items, $armor);
-
         $default = DataManager::getKey(DataManager::CONFIG, "default-flags");
         $kit->setLocked($default["locked"]);
         $kit->setEmptyOnClaim($default["emptyOnClaim"]);
         $kit->setDoOverride($default["doOverride"]);
         $kit->setDoOverrideArmor($default["doOverrideArmor"]);
         $kit->setAlwaysClaim($default["alwaysClaim"]);
-
         $kit->setEffects($effects);
         $kit->setCommands($commands ?? []);
-
         KitManager::add($kit, true);
         return true;
     }
 
-    public static function loadItem(int $id = 0, int $damage = 0, int $count = 1, string $name = "default", ...$enchantments) : Item {
-        $item = Item::get($id, $damage, $count);
+    /**
+     * @param integer $id
+     * @param integer $damage
+     * @param integer $count
+     * @param string $name
+     * @param [type] ...$enchantments
+     * @return Item
+     */
+    public static function loadItem(int $id = 0, int $damage = 0, int $count = 1, string $name = "default", ...$enchantments): Item{
+        $item = LegacyStringToItemParser::getInstance()->parse($id.":".$damage)->setCount($count);
         if(strtolower($name) !== "default") {
             $item->setCustomName($name);
         }
         $enchantment = null;
         foreach($enchantments as $key => $name_level) {
-            if($key % 2 === 0) { //Name expected
-                $enchantment = Enchantment::getEnchantmentByName((string)$name_level);
-
-            } elseif($enchantment !== null) {
-
+            if($key % 2 === 0){ //Name expected
+                $enchantment = EnchantmentIdMap::getInstance()->parse((string)$name_level);
+            }elseif($enchantment !== null){
                 $item->addEnchantment(new EnchantmentInstance($enchantment, (int)$name_level));
             }
         }
-
         return $item;
     }
 
-
-    public static function getKitPlugin() : ?Main {
+    /**
+     * @return Main|null
+     */
+    public static function getKitPlugin(): ?Main{
         if(!isset(self::$kitPlugin)) self::$kitPlugin = Server::getInstance()->getPluginManager()->getPlugin("KitUI");
         $pl = self::$kitPlugin;
         return $pl instanceof Main ? $pl : null;
     }
 
-    public static function isPluginLoaded() : bool {
+    public static function isPluginLoaded(): bool{
         return self::getKitPlugin() !== null;
     }
 

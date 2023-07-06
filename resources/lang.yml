@@ -1,10 +1,12 @@
 #don't touch this
-version: 9
+version: 10
 
 ## put false instead of a message to disable
 # messages
 
 sender-not-player: "§l§4> §r§7sender needs to be a player"
+
+empty-inventory: "§c§l> §r§7You must have items in inventory to create a kit"
 
 # this appears when trying to claim a kit with a cost when no compatible economy plugin is found
 no-economy: "§c§l> §r§7There is no economy installed."
@@ -12,7 +14,6 @@ no-economy: "§c§l> §r§7There is no economy installed."
 unknown-exception: "§c§l> §r§7There was an unknown exception."
 
 coming-soon: "§c§l> §r§7This feature is coming soon."
-
 # chestkit item
 chestkit-name: "§r§a{NAME}§r§7 kit"
 chestkit-lore:

@@ -1,8 +1,21 @@
 <?php
-
+/**
+ *    _____                         _  __  _   _         
+ *   | ____|   __ _   ___   _   _  | |/ / (_) | |_   ___ 
+ *   |  _|    / _` | / __| | | | | | ' /  | | | __| / __|
+ *   | |___  | (_| | \__ \ | |_| | | . \  | | | |_  \__ \
+ *   |_____|  \__,_| |___/  \__, | |_|\_\ |_|  \__| |___/
+ *                           |___/                        
+ *          by AndreasHGK and fernanACM 
+ */
 declare(strict_types=1);
 
 namespace AndreasHGK\EasyKits\command;
+
+use pocketmine\player\Player;
+
+use pocketmine\command\Command;
+use pocketmine\command\CommandSender;
 
 use AndreasHGK\EasyKits\manager\CategoryManager;
 use AndreasHGK\EasyKits\manager\DataManager;
@@ -11,25 +24,21 @@ use AndreasHGK\EasyKits\ui\CategorySelectForm;
 use AndreasHGK\EasyKits\ui\KitSelectForm;
 use AndreasHGK\EasyKits\utils\LangUtils;
 use AndreasHGK\EasyKits\utils\TryClaim;
-use pocketmine\command\Command;
-use pocketmine\command\CommandSender;
-use pocketmine\player\Player;
 
-class KitCommand extends EKExecutor {
+class KitCommand extends EKExecutor{
 
-    public function __construct() {
+    public function __construct(){
         $this->setDataFromConfig("kit");
 
     }
 
-    public function onCommand(CommandSender $sender, Command $command, string $label, array $args) : bool {
+    public function onCommand(CommandSender $sender, Command $command, string $label, array $args): bool{
         if(!$sender instanceof Player) {
             $sender->sendMessage(LangUtils::getMessage("sender-not-player"));
             return true;
         }
-
-        if(!isset($args[0])) {
-            if(empty(KitManager::getPermittedKitsFor($sender)) && (empty(KitManager::getAll()) && !DataManager::getKey(DataManager::CONFIG, "show-locked"))) {
+        if(!isset($args[0])){
+            if(empty(KitManager::getPermittedKitsFor($sender)) && (empty(KitManager::getAll()) && !DataManager::getKey(DataManager::CONFIG, "show-locked"))){
                 $sender->sendMessage(LangUtils::getMessage("kit-none-available"));
                 return true;
             }
@@ -38,15 +47,13 @@ class KitCommand extends EKExecutor {
                 $sender->sendMessage(LangUtils::getMessage("kit-list", true, ["{KITS}" => $list]));
                 return true;
             }
-
-            if(!empty(CategoryManager::getAll())) {
+            if(!empty(CategoryManager::getAll())){
                 CategorySelectForm::sendTo($sender);
             } else {
                 KitSelectForm::sendTo($sender);
             }
             return true;
         }
-
         if(!KitManager::exists($args[0])) {
             $sender->sendMessage(LangUtils::getMessage("kit-not-found"));
             return true;

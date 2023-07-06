@@ -1,8 +1,22 @@
 <?php
-
+/**
+ *    _____                         _  __  _   _         
+ *   | ____|   __ _   ___   _   _  | |/ / (_) | |_   ___ 
+ *   |  _|    / _` | / __| | | | | | ' /  | | | __| / __|
+ *   | |___  | (_| | \__ \ | |_| | | . \  | | | |_  \__ \
+ *   |_____|  \__,_| |___/  \__, | |_|\_\ |_|  \__| |___/
+ *                           |___/                        
+ *          by AndreasHGK and fernanACM 
+ */
 declare(strict_types=1);
 
 namespace AndreasHGK\EasyKits\manager;
+
+use Throwable;
+
+use pocketmine\permission\Permissible;
+
+use pocketmine\utils\Config;
 
 use AndreasHGK\EasyKits\Category;
 use AndreasHGK\EasyKits\EasyKits;
@@ -10,21 +24,19 @@ use AndreasHGK\EasyKits\event\CategoryCreateEvent;
 use AndreasHGK\EasyKits\event\CategoryDeleteEvent;
 use AndreasHGK\EasyKits\event\CategoryEditEvent;
 use AndreasHGK\EasyKits\Kit;
-use pocketmine\permission\Permissible;
-use pocketmine\utils\Config;
-use Throwable;
 
-class CategoryManager {
+class CategoryManager{
 
     public const CATEGORY_FORMAT = [
         "kits" => [],
         "locked" => true,
     ];
 
-    public static $categories = [];
+    /** @var array $categories */
+    public static array $categories = [];
 
 
-    public static function exists(string $file) : bool {
+    public static function exists(string $file): bool{
         return isset(self::$categories[$file]);
     }
 
@@ -32,10 +44,10 @@ class CategoryManager {
      * @param Permissible $permissible
      * @return Kit[]
      */
-    public static function getPermittedCategoriesFor(Permissible $permissible) : array {
+    public static function getPermittedCategoriesFor(Permissible $permissible): array{
         $categories = [];
-        foreach(self::getAll() as $category) {
-            if($category->hasPermission($permissible)) {
+        foreach(self::getAll() as $category){
+            if($category->hasPermission($permissible)){
                 $categories[] = $category;
             }
         }
@@ -45,7 +57,7 @@ class CategoryManager {
     /**
      * @return Category[]
      */
-    public static function getAll() : array {
+    public static function getAll(): array{
         return self::$categories;
     }
 
@@ -53,11 +65,17 @@ class CategoryManager {
      * @param string $name
      * @return Category|null
      */
-    public static function get(string $name) : ?Category {
+    public static function get(string $name): ?Category{
         return isset(self::$categories[$name]) ? clone self::$categories[$name] : null;
     }
 
-    public static function update(Category $old, Category $new, bool $silent = false) : bool {
+    /**
+     * @param Category $old
+     * @param Category $new
+     * @param boolean $silent
+     * @return boolean
+     */
+    public static function update(Category $old, Category $new, bool $silent = false): bool{
         $event = new CategoryEditEvent($old, $new);
         if(!$silent) $event->call();
 
@@ -70,7 +88,12 @@ class CategoryManager {
         return true;
     }
 
-    public static function add(Category $category, bool $silent = false) : bool {
+    /**
+     * @param Category $category
+     * @param boolean $silent
+     * @return boolean
+     */
+    public static function add(Category $category, bool $silent = false): bool{
         $event = new CategoryCreateEvent($category);
         if(!$silent) $event->call();
 
@@ -80,7 +103,12 @@ class CategoryManager {
         return true;
     }
 
-    public static function remove(Category $kit, bool $silent = false) : bool {
+    /**
+     * @param Category $kit
+     * @param boolean $silent
+     * @return boolean
+     */
+    public static function remove(Category $kit, bool $silent = false): bool{
         $event = new CategoryDeleteEvent($kit);
         if(!$silent) $event->call();
 
@@ -93,27 +121,39 @@ class CategoryManager {
         return true;
     }
 
-    public static function loadAll() : void {
+    /**
+     * @return void
+     */
+    public static function loadAll(): void{
         $file = self::getCategoryFile()->getAll();
         foreach($file as $name => $category) {
             self::load((string)$name);
         }
     }
 
-    public static function saveAll() : void {
+    /**
+     * @return void
+     */
+    public static function saveAll(): void{
         foreach(self::getAll() as $name => $category) {
             self::save((string)$name);
         }
         DataManager::save(DataManager::CATEGORIES);
     }
 
-    public static function reloadAll() : void {
+    /**
+     * @return void
+     */
+    public static function reloadAll(): void{
         DataManager::reload(DataManager::CATEGORIES);
         self::unloadAll();
         self::loadAll();
     }
 
-    public static function unloadAll() : void {
+    /**
+     * @return void
+     */
+    public static function unloadAll(): void{
         self::$categories = [];
     }
 
@@ -121,13 +161,17 @@ class CategoryManager {
         unset(self::$categories[$kit]);
     }
 
-    public static function load(string $name) : void {
+    /**
+     * @param string $name
+     * @return void
+     */
+    public static function load(string $name): void{
         $file = self::getCategoryFile()->getAll();
         $categorydata = $file[$name];
         try{
             $category = new Category($name);
             $kits = [];
-            foreach($categorydata["kits"] as $kitname) {
+            foreach($categorydata["kits"] as $kitname){
                 if(!KitManager::exists($kitname)) continue;
                 $kits[$kitname] = KitManager::get($kitname);
             }
@@ -140,7 +184,11 @@ class CategoryManager {
         }
     }
 
-    public static function save(string $name) : void {
+    /**
+     * @param string $name
+     * @return void
+     */
+    public static function save(string $name): void{
         $file = self::getCategoryFile();
         $category = self::get($name);
         $categoryData = self::CATEGORY_FORMAT;
@@ -151,12 +199,13 @@ class CategoryManager {
         $file->set($category->getName(), $categoryData);
     }
 
-    private static function getCategoryFile() : Config {
+    /**
+     * @return Config
+     */
+    private static function getCategoryFile(): Config{
         return DataManager::get(DataManager::CATEGORIES);
     }
 
-
-    private function __construct() {
+    private function __construct(){
     }
-
 }

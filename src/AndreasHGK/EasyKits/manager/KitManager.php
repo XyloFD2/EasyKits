@@ -1,8 +1,26 @@
 <?php
-
+/**
+ *    _____                         _  __  _   _         
+ *   | ____|   __ _   ___   _   _  | |/ / (_) | |_   ___ 
+ *   |  _|    / _` | / __| | | | | | ' /  | | | __| / __|
+ *   | |___  | (_| | \__ \ | |_| | | . \  | | | |_  \__ \
+ *   |_____|  \__,_| |___/  \__, | |_|\_\ |_|  \__| |___/
+ *                           |___/                        
+ *          by AndreasHGK and fernanACM 
+ */
 declare(strict_types=1);
 
 namespace AndreasHGK\EasyKits\manager;
+
+use Throwable;
+
+use pocketmine\utils\Config;
+
+use pocketmine\permission\Permissible;
+
+use pocketmine\data\bedrock\EffectIdMap;
+
+use pocketmine\entity\effect\EffectInstance;
 
 use AndreasHGK\EasyKits\EasyKits;
 use AndreasHGK\EasyKits\event\KitCreateEvent;
@@ -10,12 +28,6 @@ use AndreasHGK\EasyKits\event\KitDeleteEvent;
 use AndreasHGK\EasyKits\event\KitEditEvent;
 use AndreasHGK\EasyKits\Kit;
 use AndreasHGK\EasyKits\utils\ItemUtils;
-use pocketmine\data\bedrock\EffectIdMap;
-use pocketmine\entity\Effect;
-use pocketmine\entity\effect\EffectInstance;
-use pocketmine\permission\Permissible;
-use pocketmine\utils\Config;
-use Throwable;
 
 class KitManager {
 
@@ -35,7 +47,7 @@ class KitManager {
     ];
 
     /** @var Kit[] */
-    public static $kits = [];
+    public static array $kits = [];
 
     /**
      * Get all the kits a certain player is allowed to claim
@@ -43,7 +55,7 @@ class KitManager {
      * @param Permissible $permissible
      * @return Kit[]
      */
-    public static function getPermittedKitsFor(Permissible $permissible) : array {
+    public static function getPermittedKitsFor(Permissible $permissible): array{
         $kits = [];
         foreach(KitManager::getAll() as $kit) {
             if($kit->hasPermission($permissible)) {
@@ -61,19 +73,16 @@ class KitManager {
      * @param bool $silent
      * @return bool
      */
-    public static function update(Kit $old, Kit $new, bool $silent = false) : bool {
+    public static function update(Kit $old, Kit $new, bool $silent = false): bool{
         $event = new KitEditEvent($old, $new);
-
         if(!$silent) $event->call();
-
         if($event->isCancelled()) return false;
-
-        if($event->getOriginalKit()->getName() !== $event->getKit()->getName()) {
+        if($event->getOriginalKit()->getName() !== $event->getKit()->getName()){
             self::remove($old, true);
         }
         self::$kits[$event->getKit()->getName()] = $event->getKit();
         $kit = $event->getKit();
-        if($kit->getPermission() !== $event->getOriginalKit()->getPermission()) {
+        if($kit->getPermission() !== $event->getOriginalKit()->getPermission()){
             $perm = $kit->getPermission();
             $kit->setPermission($event->getOriginalKit()->getPermission());
             $kit->changePermission($perm);
@@ -88,12 +97,10 @@ class KitManager {
      * @param bool $silent
      * @return bool
      */
-    public static function add(Kit $kit, bool $silent = false) : bool {
+    public static function add(Kit $kit, bool $silent = false): bool{
         $event = new KitCreateEvent($kit);
         if(!$silent) $event->call();
-
         if($event->isCancelled()) return false;
-
         self::$kits[$event->getKit()->getName()] = $event->getKit();
         return true;
     }
@@ -105,14 +112,11 @@ class KitManager {
      * @param bool $silent
      * @return bool
      */
-    public static function remove(Kit $kit, bool $silent = false) : bool {
+    public static function remove(Kit $kit, bool $silent = false): bool{
         $event = new KitDeleteEvent($kit);
         if(!$silent) $event->call();
-
         if($event->isCancelled()) return false;
-
         $event->getKit()->unregisterPermissions();
-
         $kits = self::getKitFile();
         $kits->remove($event->getKit()->getName());
         DataManager::save(DataManager::KITS);
@@ -135,14 +139,14 @@ class KitManager {
      * @param string $name
      * @return Kit|null
      */
-    public static function get(string $name) : ?Kit {
+    public static function get(string $name): ?Kit{
         return isset(self::$kits[$name]) ? clone self::$kits[$name] : null;
     }
 
     /**
      * Load all the kits from the kits.yml file
      */
-    public static function loadAll() : void {
+    public static function loadAll(): void{
         $file = self::getKitFile()->getAll();
         foreach($file as $name => $kit) {
             self::load((string)$name);
@@ -153,7 +157,7 @@ class KitManager {
      * Reloads every kit
      * WARNING: progress made before reloading will be lost
      */
-    public static function reloadAll() : void {
+    public static function reloadAll(): void{
         DataManager::reload(DataManager::KITS);
         self::unloadAll();
         self::loadAll();
@@ -162,7 +166,7 @@ class KitManager {
     /**
      * Unload every kit
      */
-    public static function unloadAll() : void {
+    public static function unloadAll(): void{
         self::$kits = [];
     }
 
@@ -171,7 +175,7 @@ class KitManager {
      *
      * @param string $kit
      */
-    public static function unload(string $kit) : void {
+    public static function unload(string $kit): void{
         unset(self::$kits[$kit]);
     }
 
@@ -181,15 +185,15 @@ class KitManager {
      * @param string $kit
      * @return bool
      */
-    public static function exists(string $kit) : bool {
+    public static function exists(string $kit): bool{
         return isset(self::$kits[$kit]);
     }
 
     /**
      * Save all the kits to the kits.yml file
      */
-    public static function saveAll() : void {
-        foreach(self::getAll() as $name => $kit) {
+    public static function saveAll(): void{
+        foreach(self::getAll() as $name => $kit){
             self::save((string)$name);
         }
         DataManager::save(DataManager::KITS);
@@ -201,25 +205,25 @@ class KitManager {
      * @param string $name
      * @internal
      */
-    public static function load(string $name) : void {
+    public static function load(string $name): void{
         $file = self::getKitFile()->getAll();
         $kitdata = $file[$name];
         try{
             $items = [];
-            foreach($kitdata["items"] as $slot => $itemData) {
+            foreach($kitdata["items"] as $slot => $itemData){
                 $items[$slot] = ItemUtils::dataToItem($itemData);
             }
 
             $armor = [];
-            foreach($kitdata["armor"] as $slot => $itemData) {
+            foreach($kitdata["armor"] as $slot => $itemData){
                 $armor[$slot] = ItemUtils::dataToItem($itemData);
             }
             $effects = [];
-            foreach($kitdata["effects"] ?? [] as $id => $effect) {
+            foreach($kitdata["effects"] ?? [] as $id => $effect){
                 $effects[$id] = new EffectInstance(EffectIdMap::getInstance()->fromId($id), $effect["duration"] ?? null, $effect["amplifier"] ?? 0);
             }
             $commands = [];
-            foreach($kitdata["commands"] ?? [] as $command) {
+            foreach($kitdata["commands"] ?? [] as $command){
                 $commands[] = $command;
             }
 
@@ -237,7 +241,7 @@ class KitManager {
             $kit->setCommands($commands);
 
             self::$kits[$name] = $kit;
-        } catch(Throwable $e) {
+        }catch(Throwable $e){
             EasyKits::get()->getLogger()->error("failed to load kit '" . $name . "'");
             EasyKits::get()->getLogger()->debug($e->getMessage());
         }
@@ -250,7 +254,7 @@ class KitManager {
      * @param string $name
      * @internal
      */
-    public static function save(string $name) : void {
+    public static function save(string $name): void{
         $file = self::getKitFile();
         $kit = self::get($name);
         $kitData = self::KIT_FORMAT;
@@ -286,12 +290,10 @@ class KitManager {
      *
      * @return Config
      */
-    private static function getKitFile() : Config {
+    private static function getKitFile(): Config{
         return DataManager::get(DataManager::KITS);
     }
 
     private function __construct() {
     }
-
-
 }

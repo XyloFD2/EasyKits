@@ -1,20 +1,34 @@
 <?php
-
+/**
+ *    _____                         _  __  _   _         
+ *   | ____|   __ _   ___   _   _  | |/ / (_) | |_   ___ 
+ *   |  _|    / _` | / __| | | | | | ' /  | | | __| / __|
+ *   | |___  | (_| | \__ \ | |_| | | . \  | | | |_  \__ \
+ *   |_____|  \__,_| |___/  \__, | |_|\_\ |_|  \__| |___/
+ *                           |___/                        
+ *          by AndreasHGK and fernanACM 
+ */
 declare(strict_types=1);
 
 namespace AndreasHGK\EasyKits\ui;
 
+use pocketmine\player\Player;
+
+use Vecnavium\FormsUI\CustomForm;
+
 use AndreasHGK\EasyKits\Category;
 use AndreasHGK\EasyKits\manager\CategoryManager;
 use AndreasHGK\EasyKits\utils\LangUtils;
-use AndreasHGK\EasyKits\libs\jojoe77777\FormAPI\CustomForm;
-use pocketmine\player\Player;
 
-class CreatecategoryForm {
+class CreatecategoryForm{
 
-    public static function sendTo(Player $player) : void {
+    /**
+     * @param Player $player
+     * @return void
+     */
+    public static function sendTo(Player $player): void{
         $ui = new CustomForm(function (Player $player, $data) {
-            if($data === null) {
+            if(is_null($data)){
                 $player->sendMessage(LangUtils::getMessage("createcategory-cancelled"));
                 return;
             }
@@ -46,5 +60,4 @@ class CreatecategoryForm {
         $ui->addToggle(LangUtils::getMessage("createcategory-lockedToggle"), false, "locked");
         $player->sendForm($ui);
     }
-
 }

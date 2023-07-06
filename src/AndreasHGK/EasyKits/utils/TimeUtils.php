@@ -1,14 +1,26 @@
 <?php
-
+/**
+ *    _____                         _  __  _   _         
+ *   | ____|   __ _   ___   _   _  | |/ / (_) | |_   ___ 
+ *   |  _|    / _` | / __| | | | | | ' /  | | | __| / __|
+ *   | |___  | (_| | \__ \ | |_| | | . \  | | | |_  \__ \
+ *   |_____|  \__,_| |___/  \__, | |_|\_\ |_|  \__| |___/
+ *                           |___/                        
+ *          by AndreasHGK and fernanACM 
+ */
 declare(strict_types=1);
 
 namespace AndreasHGK\EasyKits\utils;
 
 use http\Exception\UnexpectedValueException;
 
-abstract class TimeUtils {
+abstract class TimeUtils{
 
-    public static function intToTimeString(int $seconds) : string {
+    /**
+     * @param integer $seconds
+     * @return string
+     */
+    public static function intToTimeString(int $seconds): string{
         if($seconds < 0) throw new UnexpectedValueException("time can't be a negative value");
         if($seconds === 0) {
             return "0 seconds";
@@ -44,5 +56,4 @@ abstract class TimeUtils {
         }
         return $timeString;
     }
-
 }

@@ -30,6 +30,7 @@ examplekit:
       display_name: "§r§aThank you for using EasyKits!"
       lore:
         - "§r§7Developed by: §9AndreasHGK"
+        - "§r§7Updated by: §9fernanACM"
         - "§r§fTIP: §7Remove this kit. This is just an example."
   # Items to put in the armor slots. 0 -> boots, 1 -> leggings, 2 -> chestplate, 3 -> helmet
   armor:
@@ -54,7 +55,7 @@ examplekit:
       count: 1
       display_name: "§1Example Helmet"
   # The price a user has to pay to claim a kit
-  price: 10.000000
+  price: 10
   # The time a user has to wait before being able to claim a new kit. The cooldown is in seconds
   cooldown: 60
   flags:

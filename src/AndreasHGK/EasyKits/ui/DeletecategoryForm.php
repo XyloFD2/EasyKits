@@ -1,17 +1,31 @@
 <?php
-
+/**
+ *    _____                         _  __  _   _         
+ *   | ____|   __ _   ___   _   _  | |/ / (_) | |_   ___ 
+ *   |  _|    / _` | / __| | | | | | ' /  | | | __| / __|
+ *   | |___  | (_| | \__ \ | |_| | | . \  | | | |_  \__ \
+ *   |_____|  \__,_| |___/  \__, | |_|\_\ |_|  \__| |___/
+ *                           |___/                        
+ *          by AndreasHGK and fernanACM 
+ */
 declare(strict_types=1);
 
 namespace AndreasHGK\EasyKits\ui;
 
-use AndreasHGK\EasyKits\manager\CategoryManager;
-use AndreasHGK\EasyKits\utils\LangUtils;
-use AndreasHGK\EasyKits\libs\jojoe77777\FormAPI\CustomForm;
 use pocketmine\player\Player;
 
-class DeletecategoryForm {
+use Vecnavium\FormsUI\CustomForm;
 
-    public static function sendTo(Player $player) : void {
+use AndreasHGK\EasyKits\manager\CategoryManager;
+use AndreasHGK\EasyKits\utils\LangUtils;
+
+class DeletecategoryForm{
+
+    /**
+     * @param Player $player
+     * @return void
+     */
+    public static function sendTo(Player $player): void{
         $categories = [];
         foreach(CategoryManager::getAll() as $category) {
             $categories[] = $category->getName();

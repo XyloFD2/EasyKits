@@ -1,24 +1,38 @@
 <?php
-
+/**
+ *    _____                         _  __  _   _         
+ *   | ____|   __ _   ___   _   _  | |/ / (_) | |_   ___ 
+ *   |  _|    / _` | / __| | | | | | ' /  | | | __| / __|
+ *   | |___  | (_| | \__ \ | |_| | | . \  | | | |_  \__ \
+ *   |_____|  \__,_| |___/  \__, | |_|\_\ |_|  \__| |___/
+ *                           |___/                        
+ *          by AndreasHGK and fernanACM 
+ */
 declare(strict_types=1);
 
 namespace AndreasHGK\EasyKits\utils;
 
+use pocketmine\player\Player;
+
+use pocketmine\item\Item;
+
 use AndreasHGK\EasyKits\Kit;
 use AndreasHGK\EasyKits\manager\CooldownManager;
 use AndreasHGK\EasyKits\manager\DataManager;
-use pocketmine\item\Item;
-use pocketmine\player\Player;
 
-abstract class TryClaim {
+abstract class TryClaim{
 
-    public static function tryClaim(Kit $kit, Player $player) : void {
-
-        try {
+    /**
+     * @param Kit $kit
+     * @param Player $player
+     * @return void
+     */
+    public static function tryClaim(Kit $kit, Player $player): void{
+        try{
             if($kit->claim($player)) $player->sendMessage(LangUtils::getMessage("kit-claim-success", true, ["{NAME}" => $kit->getName()]));
 
-        } catch(KitException $e) {
-            switch($e->getCode()) {
+        }catch(KitException $e){
+            switch($e->getCode()){
                 case 0:
                     $time = CooldownManager::getKitCooldown($kit, $player);
                     $timeString = TimeUtils::intToTimeString($time);
@@ -43,8 +57,14 @@ abstract class TryClaim {
         }
     }
 
-    public static function TryChestClaim(Player $player, Item $chestkit, Kit $kit) : void {
-        try {
+    /**
+     * @param Player $player
+     * @param Item $chestkit
+     * @param Kit $kit
+     * @return void
+     */
+    public static function TryChestClaim(Player $player, Item $chestkit, Kit $kit): void{
+        try{
             $kit->setPrice(0);
             $kit->setCooldown(0);
             if(!DataManager::getKey(DataManager::CONFIG, "chestKit-locked")) {
@@ -57,7 +77,7 @@ abstract class TryClaim {
                 $player->getInventory()->setItem($index, $i);
                 return;
             }
-        } catch(KitException $e) {
+        }catch(KitException $e){
             switch($e->getCode()) {
                 case 0:
                     $time = CooldownManager::getKitCooldown($kit, $player);
@@ -83,12 +103,16 @@ abstract class TryClaim {
         }
     }
 
-    public static function ForceClaim(Player $player, Kit $kit) : void {
+    /**
+     * @param Player $player
+     * @param Kit $kit
+     * @return void
+     */
+    public static function ForceClaim(Player $player, Kit $kit): void{
         $kit = clone $kit;
         $kit->setPrice(0);
         $kit->setCooldown(0);
         $kit->setLocked(false);
         $kit->claim($player);
     }
-
 }

@@ -1,5 +1,5 @@
 #don't touch this
-version: 3
+version: 4
 
 # the command name. Don't change this or the command won't work.
 createkit:
@@ -9,7 +9,7 @@ createkit:
     - "makekit"
     - "addkit"
   # the description is what will appear next to the command in the command list.
-  description: "make a kit"
+  description: "make a kit by fernanACM and AndreasHGK"
   # the usage is how to execute the command. It is best to leave it like this.
   usage: "/createkit [name]"
 
@@ -17,7 +17,7 @@ kit:
   labels:
     - "kit"
     - "ekit"
-  description: "claim a kit"
+  description: "claim a kit by fernanACM and AndreasHGK"
   usage: "/kit [name]"
 
 deletekit:
@@ -25,36 +25,39 @@ deletekit:
     - "deletekit"
     - "delkit"
     - "removekit"
-  description: "delete a kit"
+  description: "delete a kit by fernanACM and AndreasHGK"
   usage: "/deletekit [name]"
 
 ekimport:
   labels:
     - "ekimport"
     - "importkit"
-  description: "import kits from other plugins"
+  description: "import kits from other plugins by fernanACM and AndreasHGK"
   usage: "/ekimport [plugin]"
 
 editkit:
   labels:
     - "editkit"
-  description: "edit a kit"
+  description: "edit a kit by fernanACM and AndreasHGK"
   usage: "/editkit [plugin]"
 
 createcategory:
   labels:
     - "createcategory"
-  description: "make a kit category"
+    - "addcategory"
+  description: "make a kit category by fernanACM and AndreasHGK"
   usage: "/createcategory"
 
 deletecategory:
   labels:
     - "deletecategory"
-  description: "delete a kit category"
+    - "removecategory"
+  description: "delete a kit category by fernanACM and AndreasHGK"
   usage: "/deletecategory"
 
 givekit:
   labels:
     - "givekit"
-  description: "give a kit to someone"
+    - "gkit"
+  description: "give a kit to someone by fernanACM and AndreasHGK"
   usage: "/givekit [player] [kit]"

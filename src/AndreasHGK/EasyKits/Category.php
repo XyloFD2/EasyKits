@@ -1,23 +1,32 @@
 <?php
-
+/**
+ *    _____                         _  __  _   _         
+ *   | ____|   __ _   ___   _   _  | |/ / (_) | |_   ___ 
+ *   |  _|    / _` | / __| | | | | | ' /  | | | __| / __|
+ *   | |___  | (_| | \__ \ | |_| | | . \  | | | |_  \__ \
+ *   |_____|  \__,_| |___/  \__, | |_|\_\ |_|  \__| |___/
+ *                           |___/                        
+ *          by AndreasHGK and fernanACM 
+ */
 declare(strict_types=1);
 
 namespace AndreasHGK\EasyKits;
 
-use AndreasHGK\EasyKits\manager\DataManager;
 use pocketmine\permission\Permissible;
 use pocketmine\permission\Permission;
 use pocketmine\permission\PermissionParser;
 use pocketmine\permission\PermissionManager;
 
-class Category {
+use AndreasHGK\EasyKits\manager\DataManager;
 
-    /** @var string */
-    protected $name;
+class Category{
+
+    /** @var string $name */
+    protected string $name;
     /** @var Kit[] */
-    protected $kits = [];
-    /** @var bool */
-    protected $locked = true;
+    protected array $kits = [];
+    /** @var bool $locked */
+    protected bool $locked = true;
 
     /**
      * Get all the kits that the Permissible is allowed to claim
@@ -25,7 +34,7 @@ class Category {
      * @param Permissible $permissible
      * @return array|Kit[]
      */
-    public function getPermittedKitsFor(Permissible $permissible) : array {
+    public function getPermittedKitsFor(Permissible $permissible): array{
         $kits = [];
         foreach($this->kits as $kit) {
             if($kit->hasPermission($permissible)) $kits[$kit->getName()] = $kit;
@@ -39,7 +48,7 @@ class Category {
      * @param Permissible $permissible
      * @return bool
      */
-    public function hasPermission(Permissible $permissible) : bool {
+    public function hasPermission(Permissible $permissible): bool{
         return !$this->isLocked() || $permissible->hasPermission(EasyKits::PERM_ROOT . "category." . $this->getName()) || $permissible->hasPermission(EasyKits::PERM_ROOT . "category");
     }
 
@@ -49,7 +58,7 @@ class Category {
      * @param Kit $kit
      * @return bool
      */
-    public function hasKit(Kit $kit) : bool {
+    public function hasKit(Kit $kit): bool{
         return isset($this->kits[$kit->getName()]);
     }
 
@@ -58,7 +67,7 @@ class Category {
      *
      * @param Kit $kit
      */
-    public function addKit(Kit $kit) {
+    public function addKit(Kit $kit): void{
         $this->kits[$kit->getName()] = $kit;
     }
 
@@ -67,7 +76,7 @@ class Category {
      *
      * @param Kit $kit
      */
-    public function removeKit(Kit $kit) {
+    public function removeKit(Kit $kit): void{
         unset($this->kits[$kit->getName()]);
     }
 
@@ -76,7 +85,7 @@ class Category {
      *
      * @return string
      */
-    public function getName() : string {
+    public function getName(): string{
         return $this->name;
     }
 
@@ -85,7 +94,7 @@ class Category {
      *
      * @param string $name
      */
-    public function setName(string $name) : void {
+    public function setName(string $name): void{
         $this->name = $name;
     }
 
@@ -94,7 +103,7 @@ class Category {
      *
      * @return array|Kit[]
      */
-    public function getKits() : array {
+    public function getKits(): array{
         return $this->kits;
     }
 
@@ -103,7 +112,7 @@ class Category {
      *
      * @param array $kits
      */
-    public function setKits(array $kits) : void {
+    public function setKits(array $kits): void{
         $this->kits = $kits;
     }
 
@@ -112,7 +121,7 @@ class Category {
      *
      * @return bool
      */
-    public function isLocked() : bool {
+    public function isLocked(): bool{
         return $this->locked;
     }
 
@@ -121,11 +130,11 @@ class Category {
      *
      * @param bool $locked
      */
-    public function setLocked(bool $locked) : void {
+    public function setLocked(bool $locked): void{
         $this->locked = $locked;
     }
 
-    public function __construct(string $name) {
+    public function __construct(string $name){
         $this->name = $name;
         PermissionManager::getInstance()->addPermission(new Permission(EasyKits::PERM_ROOT . "category." . $name, "permission to view category " . $name, [DataManager::getKey(DataManager::CONFIG, "op-has-all-categories") ? PermissionParser::DEFAULT_OP : PermissionParser::DEFAULT_FALSE]));
     }
