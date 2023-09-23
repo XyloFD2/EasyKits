@@ -17,6 +17,7 @@ use pocketmine\data\SavedDataLoadingException;
 
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
+use pocketmine\item\StringToItemParser;
 
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\TreeRoot;
@@ -30,9 +31,11 @@ class LegacyUtils{
      * @return array
      */
     public static function jsonSerialize(Item $item): array{
+        /** @var StringToItemParser $itemId */
+        $itemId = StringToItemParser::getInstance();
         $serialized = GlobalItemDataHandlers::getSerializer()->serializeType($item);
 		$data = [
-			"id" => $serialized->getName()
+			"id" => $itemId->lookupAliases($item)[0]
 		];
 		if($item->getCount() !== 1){
 			$data["count"] = $item->getCount();
@@ -56,11 +59,11 @@ class LegacyUtils{
         $nbt = "";
 
         //Backwards compatibility
-        if (isset($data["nbt"])) {
+        if(isset($data["nbt"])) {
             $nbt = $data["nbt"];
-        } elseif (isset($data["nbt_hex"])) {
+        }elseif(isset($data["nbt_hex"])) {
             $nbt = hex2bin($data["nbt_hex"]);
-        } elseif (isset($data["nbt_b64"])) {
+        }elseif (isset($data["nbt_b64"])) {
             $nbt = base64_decode($data["nbt_b64"], true);
         }
         $itemStackData = GlobalItemDataHandlers::getUpgrader()->upgradeItemTypeDataString($data['id'], $data['damage'] ?? 0, $data['count'] ?? 1,

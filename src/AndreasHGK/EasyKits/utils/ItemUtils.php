@@ -61,9 +61,7 @@ abstract class ItemUtils {
                 if(is_int($itemData["id"])){
                     $item = LegacyStringToItemParser::getInstance()->parse($itemData["id"].":".(isset($itemData["damage"]) ? $itemData["damage"] : 0))->setCount($itemData["count"] ?? 1);
                 }else{
-                    //$item = StringToItemParser::getInstance()->parse($itemData["id"])->setCount($itemData["count"] ?? 1);
-                    $itemStackData = GlobalItemDataHandlers::getUpgrader()->upgradeItemTypeDataString($itemData['id'], $itemData['damage'] ?? 0, $itemData['count'] ?? 1, null);
-                    $item = GlobalItemDataHandlers::getDeserializer()->deserializeStack($itemStackData);
+                    $item = StringToItemParser::getInstance()->parse($itemData["id"])->setCount($itemData["count"] ?? 1);
                 }
                 if(isset($itemData["enchants"])) {
                     foreach($itemData["enchants"] as $ename => $level){
@@ -108,11 +106,11 @@ abstract class ItemUtils {
                 }
                 return $itemData;
             default:
-                $serialized = GlobalItemDataHandlers::getSerializer()->serializeType($item);
+                /** @var StringToItemParser $serialized */
+                $serialized = StringToItemParser::getInstance();
                 $itemData = self::ITEM_FORMAT;
-                $itemData["id"] = $serialized->getName();
+                $itemData["id"] = $serialized->lookupAliases($item)[0];
                 $itemData["count"] = $item->getCount();
-                $item instanceof Durable ? $item->getDamage() : $serialized->getMeta();
                 if($item->hasCustomName()) {
                     $itemData["display_name"] = $item->getCustomName();
                 }else{
