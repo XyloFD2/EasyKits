@@ -14,7 +14,6 @@ namespace AndreasHGK\EasyKits\utils;
 
 use pocketmine\data\bedrock\EnchantmentIdMap;
 
-use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\item\StringToItemParser;
@@ -27,7 +26,6 @@ use DaPigGuy\PiggyCustomEnchants\CustomEnchants\CustomEnchants;
 
 use AndreasHGK\EasyKits\customenchants\PiggyCustomEnchantsLoader;
 use AndreasHGK\EasyKits\manager\DataManager;
-use pocketmine\world\format\io\GlobalItemDataHandlers;
 
 abstract class ItemUtils {
 
@@ -48,10 +46,10 @@ abstract class ItemUtils {
      * @param array $itemData
      * @return Item
      */
-    public static function dataToItem(array $itemData) : Item {
+    public static function dataToItem(array $itemData): Item{
         switch(strtolower($itemData["format"] ?? "")) {
             case "nbt":
-                if(is_int($itemData["id"])){
+                if(isset($itemData["id"]) && is_int($itemData["id"])){
                     $item = Item::legacyJsonDeserialize($itemData);
                 }else{
                     $item = LegacyUtils::legacyStringJsonDeserialize($itemData);
@@ -96,14 +94,11 @@ abstract class ItemUtils {
      * @param Item $item
      * @return array
      */
-    public static function itemToData(Item $item) : array {
+    public static function itemToData(Item $item): array{
         $format = DataManager::getKey(DataManager::CONFIG, "item-format");
         switch(strtolower($format)) {
             case "nbt":
                 $itemData = LegacyUtils::jsonSerialize($item);
-                if(isset($itemData["nbt_b64"]) || isset($itemData["nbt_hex"]) || isset($itemData["nbt"])) {
-                    $itemData["format"] = "nbt";
-                }
                 return $itemData;
             default:
                 /** @var StringToItemParser $serialized */
