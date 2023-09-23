@@ -1,7 +1,7 @@
 name: EasyKits
 main: AndreasHGK\EasyKits\EasyKits
-version: 1.2.0
-api: 5.0.0
+version: 3.0.1-ACM
+api: 5.3.0
 load: POSTWORLD
 authors: [fernanACM, AndreasHGK]
 description: A kit plugin for everyone
