@@ -55,8 +55,8 @@ class CooldownManager{
     public static function getKitCooldown(Kit $kit, Player $player): int{
         $kitCooldowns = self::getCooldowns();
         if(!self::hasKitCooldown($kit, $player)) return 0;
-        return ($kitCooldowns[$kit->getName()][$player->getName()] + $kit->getCooldown()) - time();
-    }
+    return (int) floor(($kitCooldowns[$kit->getName()][$player->getName()] + $kit->getCooldown()) - time());
+}
 
     /**
      * Change the cooldown that a player has for a kit
